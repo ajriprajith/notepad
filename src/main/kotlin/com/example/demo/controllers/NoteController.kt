@@ -1,23 +1,21 @@
 package com.example.demo.controllers
 
 import com.example.demo.models.NoteModel
-import com.example.demo.respositories.NoteRepository
+import com.example.demo.repositories.NoteCustomRepositoryImpl
 import com.example.demo.services.NoteService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.*
-import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
 
 @RestController
 @RequestMapping("note")
-class NoteController @Autowired constructor(private val noteService:NoteService, private val noteRepository: NoteRepository) {
+class NoteController @Autowired constructor(private val noteService:NoteService) {
 
+    private val logger: Logger = LoggerFactory.getLogger(NoteCustomRepositoryImpl::class.java)
     @GetMapping("/search/{id}")
-    fun getNoteById(@PathVariable id: String): ResponseEntity<NoteModel?> {
+    fun findById(@PathVariable id: String): ResponseEntity<NoteModel?> {
         val note = noteService.findById(id)
         return if (note != null) {
             ResponseEntity.ok(note)
@@ -27,7 +25,8 @@ class NoteController @Autowired constructor(private val noteService:NoteService,
     }
 
     @GetMapping("/search/title")
-    fun findNotesByTitle(@RequestParam title: String): ResponseEntity<List<NoteModel>> {
+    fun findByTitle(@RequestParam title: String): ResponseEntity<List<NoteModel?>> {
+        logger.info("into the search title")
         val notes = noteService.findNotesByTitle(title)
         return if (notes.isNotEmpty()) {
             ResponseEntity.ok(notes)
@@ -53,19 +52,18 @@ class NoteController @Autowired constructor(private val noteService:NoteService,
     }
 
     @DeleteMapping("/delete/{id}")
-    fun deleteNoteById(@PathVariable id: String): ResponseEntity<Void> {
-        noteService.deletebyId(id)
+    fun deleteById(@PathVariable id: String): ResponseEntity<Void> {
+        noteService.deleteById(id)
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/all")
-    fun displayAll():ResponseEntity<List<NoteModel>>{
-        val all_data = noteRepository.displayAll()
-        return if(all_data.isNotEmpty()){
-            ResponseEntity.ok(all_data)
-        }
-        else{
-            ResponseEntity.noContent().build()
-        }
-    }
+//    @GetMapping("/all")
+//    fun displayAll(): ResponseEntity<List<NoteModel>> {
+//        val allData = noteService.displayAll()
+//        return if (allData.isNotEmpty()) {
+//            ResponseEntity.ok(allData)
+//        } else {
+//            ResponseEntity.noContent().build()
+//        }
+//    }
 }

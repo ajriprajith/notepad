@@ -1,15 +1,15 @@
-package com.example.demo.respositories
+package com.example.demo.repositories
 
 import com.example.demo.models.NoteModel
+
 import org.springframework.data.mongodb.repository.MongoRepository
-import org.springframework.data.mongodb.repository.*
-import org.springframework.data.repository.RepositoryDefinition
+import org.springframework.data.mongodb.repository.Query
 import org.springframework.stereotype.Repository
 
-interface NoteRepository : MongoRepository<NoteModel, String> {
-    @Aggregation(pipeline= ["{ \$match: { title: ?0 } }"])
-    fun findNotesByTitle(title: String): List<NoteModel>
+@Repository
+interface  NoteRepository : MongoRepository<NoteModel, String>, NoteCustmRepository {
+    // Additional query methods if needed
 
-    @Query("{}")
-    fun displayAll():List<NoteModel>
+//    @Query("{}")
+//    fun displayAll():List<NoteModel>
 }
